@@ -27,3 +27,25 @@ app.post("/hablar", async (req, res) => {
     res.status(500).send("Error generando audio");
   }
 });
+import express from "express";
+import cors from "cors";
+import axios from "axios";
+
+const app = express();
+
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"]
+}));
+
+app.use(express.json());
+app.options("*", cors());
+
+app.post("/hablar", async (req, res) => {
+  // tu código de ElevenLabs
+});
+
+app.listen(3000, () => {
+  console.log("Servidor escuchando 🟢");
+});
