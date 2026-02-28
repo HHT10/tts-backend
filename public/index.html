@@ -1,0 +1,11 @@
+<button onclick="hablar()">Hablar</button>
+
+<script>
+function hablar() {
+  fetch("https://TU-BACKEND/hablar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ texto: "Hola desde mi web" })
+  });
+}
+</script>
