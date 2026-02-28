@@ -22,10 +22,10 @@ app.post("/hablar", async (req, res) => {
     const { texto } = req.body;
 
     const response = await axios.post(
-      "https://api.elevenlabs.io/v1/text-to-speech/YOUR_VOICE_ID",
+      "https://api.elevenlabs.io/v1/text-to-speech/JBFqnCBsd6RMkjVDRZzb",
       {
         text: texto,
-        model_id: "eleven_multilingual_v2"
+        model_id: "eleven_multilingual_v1"
       },
       {
         headers: {
