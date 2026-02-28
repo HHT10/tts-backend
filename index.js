@@ -5,21 +5,48 @@ const app = express();
 
 app.use(express.json());
 
+// 🔓 CORS FORZADO (manual, infalible)
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
-app.options("*", (req, res) => {
-  res.sendStatus(200);
-});
-
+// 🎤 ENDPOINT
 app.post("/hablar", async (req, res) => {
-  // aquí va ElevenLabs
+  try {
+    const { texto } = req.body;
+
+    const response = await axios.post(
+      "https://api.elevenlabs.io/v1/text-to-speech/YOUR_VOICE_ID",
+      {
+        text: texto,
+        model_id: "eleven_multilingual_v2"
+      },
+      {
+        headers: {
+          "xi-api-key": process.env.ELEVENLABS_API_KEY,
+          "Content-Type": "application/json",
+          "Accept": "audio/mpeg"
+        },
+        responseType: "arraybuffer"
+      }
+    );
+
+    res.setHeader("Content-Type", "audio/mpeg");
+    res.send(response.data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error generando audio");
+  }
 });
 
-app.listen(3000, () => {
+// 🚀 PUERTO (Render)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
   console.log("Servidor escuchando 🟢");
 });
