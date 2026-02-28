@@ -1,15 +1,29 @@
-const express = require("express");
+app.post("/hablar", async (req, res) => {
+  try {
+    const texto = req.body.texto;
 
-const app = express();
-app.use(express.json()); // 👈 para entender texto
+    const response = await axios.post(
+      "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM",
+      {
+        text: texto,
+        model_id: "eleven_monolingual_v1"
+      },
+      {
+        headers: {
+          "xi-api-key": process.env.ELEVENLABS_API_KEY,
+          "Content-Type": "application/json"
+        },
+        responseType: "arraybuffer"
+      }
+    );
 
-app.post("/hablar", (req, res) => {
-  const texto = req.body.texto;
-  console.log("Me dijeron:", texto);
+    res.set({
+      "Content-Type": "audio/mpeg"
+    });
 
-  res.send("Recibí esto: " + texto);
-});
-
-app.listen(3000, () => {
-  console.log("Servidor escuchando 🟢");
+    res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error generando audio");
+  }
 });
