@@ -1,8 +1,9 @@
 import express from "express";
-import axios from "axios";
+import cors from "cors";
 
 const app = express();
 
+app.use(cors()); // 👈 ESTO ES CLAVE
 app.use(express.json());
 
 // 🔓 CORS FORZADO (manual, infalible)
