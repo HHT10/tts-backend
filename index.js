@@ -1,26 +1,25 @@
 import express from "express";
 import cors from "cors";
+import axios from "axios";
 
 const app = express();
 
-app.use(cors()); // 👈 ESTO ES CLAVE
+app.use(cors());
 app.use(express.json());
-
-// 🔓 CORS FORZADO (manual, infalible)
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
 
 // 🎤 ENDPOINT
 app.post("/hablar", async (req, res) => {
   try {
     const { texto } = req.body;
+
+    // 🧪 Validación
+    if (!texto) {
+      return res.status(400).json({ error: "No llegó texto" });
+    }
+
+    if (!process.env.ELEVENLABS_API_KEY) {
+      return res.status(500).json({ error: "API Key no configurada" });
+    }
 
     const response = await axios.post(
       "https://api.elevenlabs.io/v1/text-to-speech/JBFqnCBsd6RMkjVDRZzb",
@@ -40,13 +39,14 @@ app.post("/hablar", async (req, res) => {
 
     res.setHeader("Content-Type", "audio/mpeg");
     res.send(response.data);
-  } catch (err) {
-    console.error(err);
+
+  } catch (error) {
+    console.error("🔥 ERROR REAL:", error.response?.data || error.message);
     res.status(500).send("Error generando audio");
   }
 });
 
-// 🚀 PUERTO (Render)
+// 🚀 PUERTO
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Servidor escuchando 🟢");
